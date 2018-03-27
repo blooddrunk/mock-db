@@ -14,16 +14,22 @@ faker.locale = 'zh_CN';
 //   }
 // };
 
+const getPagination = res => {
+  const result = res.locals.data;
+  const total = Number.parseInt(res.getHeader('X-Total-Count'), 10);
+  return {
+    total,
+    items: result,
+  };
+};
+
 module.exports = (req, res) => {
   const requestUrl = url.parse(req.url, true);
   const result = res.locals.data;
   switch (requestUrl.pathname) {
-    case '/posts': {
-      const total = Number.parseInt(res.getHeader('X-Total-Count'), 10);
-      return {
-        total,
-        items: result,
-      };
+    case '/posts':
+    case '/gatewayOnline': {
+      return getPagination(res);
     }
     default:
       return result;
