@@ -28,7 +28,8 @@ module.exports = (req, res) => {
   const result = res.locals.data;
   switch (requestUrl.pathname) {
     case '/posts':
-    case '/gatewayOnline': {
+    case '/gatewayOnline':
+    case '/gatewayOnlineLog': {
       return getPagination(res);
     }
     default:

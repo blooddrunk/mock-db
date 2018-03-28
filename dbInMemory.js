@@ -20,7 +20,23 @@ const gatewayOnline = [...Array(100).keys()].map(key => ({
   onlineStatus: faker.random.arrayElement([0, 1]),
 }));
 
+const deviceCount = {
+  total: faker.random.number({ min: 200, max: 1000 }),
+  active: faker.random.number(200),
+  online: faker.random.number(100),
+};
+
+const gatewayOnlineLog = [...Array(100).keys()].map(key => ({
+  id: key,
+  status: faker.random.arrayElement([0, 1]),
+  time: faker.date.recent(),
+  ip: faker.internet.ip(),
+  location: faker.internet.mac(),
+}));
+
 module.exports = {
   posts,
   gatewayOnline,
+  deviceCount,
+  gatewayOnlineLog,
 };
