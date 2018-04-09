@@ -18,9 +18,8 @@ const router = jsonServer.router(db);
 router.render = (req, res) => {
   const result = renderByPath(req, res);
   res.jsonp({
-    errorCode: 0,
-    errorMsg: null,
-    result,
+    code: 1000,
+    data: result,
   });
 };
 

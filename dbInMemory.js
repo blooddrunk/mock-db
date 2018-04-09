@@ -11,13 +11,13 @@ const posts = [...Array(50).keys()].map(key => ({
 
 const gatewayOnline = [...Array(100).keys()].map(key => ({
   id: key,
-  mac: faker.internet.mac(),
-  status: faker.random.arrayElement([0, 1]),
+  deviceMac: faker.internet.mac(),
+  activationStatusCode: faker.random.arrayElement([0, 1]),
   activationTime: faker.date.recent(),
-  lastOnlineTime: faker.date.recent(),
-  lastOfflineTime: faker.random.arrayElement([faker.date.recent(), '']),
+  lastLoginTime: faker.date.recent(),
+  lastLogoutTime: faker.random.arrayElement([faker.date.recent(), '']),
   onlineCount: faker.random.number(100),
-  onlineStatus: faker.random.arrayElement([0, 1]),
+  isOnline: faker.random.arrayElement([0, 1]),
 }));
 
 const deviceCount = {
