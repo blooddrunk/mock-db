@@ -17,10 +17,7 @@ server.use(
 const router = jsonServer.router(db);
 router.render = (req, res) => {
   const result = renderByPath(req, res);
-  res.jsonp({
-    code: 1000,
-    data: result,
-  });
+  res.jsonp(result);
 };
 
 server.use(router);

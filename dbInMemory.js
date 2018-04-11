@@ -1,42 +1,26 @@
 const faker = require('faker');
 faker.locale = 'zh_CN';
 
-const posts = [...Array(50).keys()].map(key => ({
-  id: key,
-  title: faker.lorem.word(),
-  body: faker.lorem.paragraph(),
-  company: faker.company.companyName(),
-  location: faker.address.streetName(),
-}));
-
-const gatewayOnline = [...Array(100).keys()].map(key => ({
-  id: key,
-  deviceMac: faker.internet.mac(),
-  activationStatusCode: faker.random.arrayElement([0, 1]),
-  activationTime: faker.date.recent(),
-  lastLoginTime: faker.date.recent(),
-  lastLogoutTime: faker.random.arrayElement([faker.date.recent(), '']),
-  onlineCount: faker.random.number(100),
-  isOnline: faker.random.arrayElement([0, 1]),
-}));
-
-const deviceCount = {
-  total: faker.random.number({ min: 200, max: 1000 }),
-  active: faker.random.number(200),
-  online: faker.random.number(100),
+const login = {
+  account: faker.internet.email(),
+  name: faker.name.findName(),
+  bandwidth: faker.random.number({ min: 20, max: 200 }),
+  currentStrategy: faker.random.number({ min: 0, max: 4 }),
 };
 
-const gatewayOnlineLog = [...Array(100).keys()].map(key => ({
-  id: key,
-  status: faker.random.arrayElement([0, 1]),
-  time: faker.date.recent(),
-  ip: faker.internet.ip(),
-  location: faker.internet.mac(),
+const availableStrategyList = [...Array(5).keys()].map(index => ({
+  id: index,
+  name: `${faker.random.number({ min: 20, max: 200 })}M-${faker.random.number({
+    min: 1,
+    max: 10,
+  })}小时-${faker.random.number({ min: 4, max: 50 })}元`,
+  targetBandwidth: faker.random.number({ min: 100, max: 200 }),
+  period: faker.random.number({ min: 1, max: 10 }),
+  limit: faker.random.number({ min: 0, max: 10 }),
+  description: faker.hacker.phrase(),
 }));
 
 module.exports = {
-  posts,
-  gatewayOnline,
-  deviceCount,
-  gatewayOnlineLog,
+  login,
+  availableStrategyList,
 };
