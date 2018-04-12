@@ -3,7 +3,6 @@
 
 const { join } = require('path')
 const yargs = require('yargs')
-const shell = require('shelljs')
 const fs = require('fs-extra')
 
 const argv = yargs
