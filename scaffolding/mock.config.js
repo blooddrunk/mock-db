@@ -1,7 +1,4 @@
-const faker = require('faker');
 const url = require('url');
-
-faker.locale = 'zh_CN';
 
 // const getPagination = (requestUrl, res) => {
 //   if (Array.isArray(res.locals.data)) {
@@ -23,16 +20,24 @@ const getPagination = res => {
   };
 };
 
-module.exports = (req, res) => {
+const render = (req, res) => {
   const requestUrl = url.parse(req.url, true);
-  const result = res.locals.data;
+
+  let result;
   switch (requestUrl.pathname) {
     case '/posts':
-    case '/gatewayOnline':
-    case '/gatewayOnlineLog': {
-      return getPagination(res);
-    }
+      result = getPagination(res);
+      break;
     default:
-      return result;
+      result = res.locals.data;
   }
+  res.jsonp(result);
+};
+
+module.exports = {
+  render,
+  routes: {
+    '/api/*': '/$1',
+  },
+  dbPath: './db.js',
 };
