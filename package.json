@@ -1,10 +1,13 @@
 {
-  "name": "mock",
+  "name": "mock-db",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "dbInMemory.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon cli.js"
+  },
+  "bin": {
+    "mock": "./server.js"
   },
   "repository": {
     "type": "git",
@@ -16,7 +19,8 @@
     "url": "https://github.com/blooddrunk/mock-db/issues"
   },
   "homepage": "https://github.com/blooddrunk/mock-db#readme",
-  "devDependencies": {
+  "dependencies": {
+    "commander": "^2.15.1",
     "faker": "^4.1.0",
     "json-server": "^0.12.1",
     "nodemon": "^1.17.3"
