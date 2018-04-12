@@ -1,0 +1,24 @@
+{
+  "name": "mock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blooddrunk/mock-db.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blooddrunk/mock-db/issues"
+  },
+  "homepage": "https://github.com/blooddrunk/mock-db#readme",
+  "devDependencies": {
+    "faker": "^4.1.0",
+    "json-server": "^0.12.1",
+    "nodemon": "^1.17.3"
+  }
+}
