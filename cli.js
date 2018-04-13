@@ -4,6 +4,7 @@
 const { join } = require('path');
 const yargs = require('yargs');
 const fs = require('fs-extra');
+const chalk = require('chalk');
 
 const argv = yargs
   .usage('mock <cmd> [args]')
@@ -26,43 +27,64 @@ const argv = yargs
         });
     },
     ({ port, dir }) => {
+      let server;
       const folderSrc = join(process.cwd(), dir);
-      if (!fs.pathExistsSync(folderSrc)) {
-        console.error(`${folderSrc} doesn't exist, run mock create first!`);
-        process.exit(1);
-      }
 
-      const configSrc = join(folderSrc, 'mock.config.js');
-      if (!fs.pathExistsSync(configSrc)) {
-        console.error(`${configSrc} doesn't exist, run mock create first!`);
-        process.exit(1);
-      }
-      const config = require(configSrc);
+      const startServer = () => {
+        if (!fs.pathExistsSync(folderSrc)) {
+          console.error(`${folderSrc} doesn't exist, run mock create first!`);
+          process.exit(1);
+        }
 
-      const dbSrc = join(folderSrc, config.dbPath || 'db.js');
-      if (!fs.pathExistsSync(dbSrc)) {
-        console.error(`${dbSrc} doesn't exist, run mock create first!`);
-        process.exit(1);
-      }
+        const configSrc = join(folderSrc, 'mock.config.js');
+        if (!fs.pathExistsSync(configSrc)) {
+          console.error(`${configSrc} doesn't exist, run mock create first!`);
+          process.exit(1);
+        }
+        const config = require(configSrc);
 
-      const db = require(dbSrc);
-      const jsonServer = require('json-server');
+        const dbSrc = join(folderSrc, config.dbPath || 'db.js');
+        if (!fs.pathExistsSync(dbSrc)) {
+          console.error(`${dbSrc} doesn't exist, run mock create first!`);
+          process.exit(1);
+        }
 
-      const server = jsonServer.create();
-      const middlewares = jsonServer.defaults();
-      server.use(middlewares);
+        const db = require(dbSrc);
+        const jsonServer = require('json-server');
 
-      if (config.routes) {
-        server.use(jsonServer.rewriter(config.routes));
-      }
+        const app = jsonServer.create();
+        const middlewares = jsonServer.defaults();
+        app.use(middlewares);
 
-      const router = jsonServer.router(db);
-      router.render = config.render;
+        if (config.routes) {
+          app.use(jsonServer.rewriter(config.routes));
+        }
 
-      server.use(router);
-      server.listen(port, () => {
-        console.log(`JSON Server is running at port ${port}`);
-      });
+        const router = jsonServer.router(db);
+        router.render = config.render;
+
+        app.use(router);
+        server = app.listen(port, () => {
+          console.log(`${chalk.green('JSON Server is running at port')} ${chalk.magenta(port)}`);
+        });
+      };
+
+      // watch file changes
+      const chokidar = require('chokidar');
+      chokidar
+        .watch(folderSrc, { ignored: /(^|[\/\\])\../, ignoreInitial: true })
+        .on('all', (event, path) => {
+          if (server) {
+            console.log('');
+            console.log(`${chalk.cyan(event)} ${chalk.grey(path)}`);
+            console.log(chalk.yellow('server reloading...'));
+            console.log('');
+            server.close();
+          }
+          startServer();
+        });
+
+      startServer();
     }
   )
   .command(
