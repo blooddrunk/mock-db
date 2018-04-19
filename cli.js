@@ -65,7 +65,26 @@ const argv = yargs
 
         app.use(router);
         server = app.listen(port, () => {
-          console.log(`${chalk.green('JSON Server is running at port')} ${chalk.magenta(port)}`);
+          console.log('');
+          console.log(
+            `${chalk.green('JSON Server is running at port')} ${chalk.magenta(
+              server.address().port
+            )}`
+          );
+        });
+
+        server.on('error', e => {
+          if (e.code === 'EADDRINUSE') {
+            console.log(
+              `${chalk.gray('Port')} ${chalk.yellowBright(port)} ${chalk.gray(
+                'in use, trying'
+              )} ${chalk.yellowBright(port + 1)} ${chalk.gray('instead...')}`
+            );
+            setTimeout(() => {
+              server.close();
+              server.listen(port + 1);
+            }, 1000);
+          }
         });
       };
 
