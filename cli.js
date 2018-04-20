@@ -28,6 +28,7 @@ const argv = yargs
     },
     ({ port, dir }) => {
       let server;
+      let currentPort = port;
       const folderSrc = join(process.cwd(), dir);
 
       const startServer = () => {
@@ -60,12 +61,19 @@ const argv = yargs
           app.use(jsonServer.rewriter(config.routes));
         }
 
+        app.use(jsonServer.bodyParser);
+        app.use((req, res, next) => {
+          if (req.method === 'POST') {
+            req.body.createdAt = Date.now();
+          }
+          next();
+        });
+
         const router = jsonServer.router(db);
         router.render = config.render;
-
         app.use(router);
-        server = app.listen(port, () => {
-          console.log('');
+
+        server = app.listen(currentPort, () => {
           console.log(
             `${chalk.green('JSON Server is running at port')} ${chalk.magenta(
               server.address().port
@@ -76,13 +84,13 @@ const argv = yargs
         server.on('error', e => {
           if (e.code === 'EADDRINUSE') {
             console.log(
-              `${chalk.gray('Port')} ${chalk.yellowBright(port)} ${chalk.gray(
+              `${chalk.gray('Port')} ${chalk.yellowBright(currentPort++)} ${chalk.gray(
                 'in use, trying'
-              )} ${chalk.yellowBright(port + 1)} ${chalk.gray('instead...')}`
+              )} ${chalk.yellowBright(currentPort)} ${chalk.gray('instead...')}`
             );
             setTimeout(() => {
               server.close();
-              server.listen(port + 1);
+              server.listen(currentPort);
             }, 1000);
           }
         });
@@ -100,10 +108,10 @@ const argv = yargs
             console.log('');
             server.close();
           }
-          startServer();
+          startServer(currentPort);
         });
 
-      startServer();
+      startServer(port);
     }
   )
   .command(
