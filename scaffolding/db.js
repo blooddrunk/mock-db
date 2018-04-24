@@ -1,23 +1,23 @@
-const categories = [...Array(3).keys()].map(index => ({
-  id: index,
-  name: `category${index}`,
+const categories = [...Array(3).keys()].map(key => ({
+  id: key,
+  name: `category${key}`,
 }));
 
-const authors = [...Array(10).keys()].map(index => ({
-  id: index,
-  name: `author${index}`,
+const authors = [...Array(10).keys()].map(key => ({
+  id: key,
+  name: `author${key}`,
 }));
 
 const rand = arr => arr[Math.floor(Math.random() * arr.length)];
 const randDate = start =>
   new Date(start.getTime() + Math.random() * (Date.now() - start.getTime()));
 
-const posts = [...Array(100).keys()].map(index => ({
-  id: index,
-  title: `title${index}`,
+const posts = [...Array(100).keys()].map(key => ({
+  id: key,
+  title: `title${key}`,
   category: rand(categories).name,
   author: rand(authors).name,
-  content: `content${index}`,
+  content: `content${key}`,
   createdAt: randDate(new Date(2010, 0, 1)),
   updatedAt: randDate(new Date(2010, 0, 1)),
 }));

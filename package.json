@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/blooddrunk/mock-db#readme",
   "dependencies": {
-    "chalk": "^2.3.2",
+    "chalk": "^2.4.0",
     "chokidar": "^2.0.3",
     "fs-extra": "^5.0.0",
     "json-server": "^0.12.1",
