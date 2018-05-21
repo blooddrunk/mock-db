@@ -9,10 +9,9 @@ const jsonServer = require('json-server');
 const chokidar = require('chokidar');
 const stoppable = require('stoppable');
 
-const clearRequireCache = () => {
-  Object.keys(require.cache).forEach(function(key) {
-    delete require.cache[key];
-  });
+const requireUncached = module => {
+  delete require.cache[require.resolve(module)];
+  return require(module);
 };
 
 const argv = yargs
@@ -52,7 +51,7 @@ const argv = yargs
           console.error(`${configSrc} doesn't exist, run mock create first!`);
           process.exit(1);
         }
-        const config = require(configSrc);
+        const config = requireUncached(configSrc);
 
         const dbSrc = join(folderSrc, config.dbPath || 'db.js');
         if (!fs.pathExistsSync(dbSrc)) {
@@ -60,7 +59,7 @@ const argv = yargs
           process.exit(1);
         }
 
-        const db = require(dbSrc);
+        const db = requireUncached(dbSrc);
 
         app = jsonServer.create();
         const middlewares = jsonServer.defaults();
@@ -116,7 +115,6 @@ const argv = yargs
             console.log(chalk.yellow('server reloading...'));
             console.log('');
             server.stop(() => {
-              clearRequireCache();
               startServer();
             });
           }
