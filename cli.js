@@ -5,6 +5,15 @@ const { join } = require('path');
 const yargs = require('yargs');
 const fs = require('fs-extra');
 const chalk = require('chalk');
+const jsonServer = require('json-server');
+const chokidar = require('chokidar');
+const stoppable = require('stoppable');
+
+const clearRequireCache = () => {
+  Object.keys(require.cache).forEach(function(key) {
+    delete require.cache[key];
+  });
+};
 
 const argv = yargs
   .usage('mock <cmd> [args]')
@@ -27,6 +36,7 @@ const argv = yargs
         });
     },
     ({ port, dir }) => {
+      let app;
       let server;
       let currentPort = port;
       const folderSrc = join(process.cwd(), dir);
@@ -51,9 +61,8 @@ const argv = yargs
         }
 
         const db = require(dbSrc);
-        const jsonServer = require('json-server');
 
-        const app = jsonServer.create();
+        app = jsonServer.create();
         const middlewares = jsonServer.defaults();
         app.use(middlewares);
 
@@ -80,6 +89,7 @@ const argv = yargs
             )}`
           );
         });
+        server = stoppable(server);
 
         server.on('error', e => {
           if (e.code === 'EADDRINUSE') {
@@ -97,7 +107,6 @@ const argv = yargs
       };
 
       // watch file changes
-      const chokidar = require('chokidar');
       chokidar
         .watch(folderSrc, { ignored: /(^|[\/\\])\../, ignoreInitial: true })
         .on('all', (event, path) => {
@@ -106,12 +115,14 @@ const argv = yargs
             console.log(`${chalk.cyan(event)} ${chalk.grey(path)}`);
             console.log(chalk.yellow('server reloading...'));
             console.log('');
-            server.close();
+            server.stop(() => {
+              clearRequireCache();
+              startServer();
+            });
           }
-          startServer(currentPort);
         });
 
-      startServer(port);
+      startServer();
     }
   )
   .command(
