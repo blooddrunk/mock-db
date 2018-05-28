@@ -43,20 +43,20 @@ const argv = yargs
 
       const startServer = () => {
         if (!fs.pathExistsSync(folderSrc)) {
-          signale.fatal(new Error(`${folderSrc} doesn't exist, run mock create first!`));
+          signale.fatal(new Error(`${folderSrc} doesn't exist, run 'mock create' first!`));
           process.exit(1);
         }
 
         const configSrc = join(folderSrc, 'mock.config.js');
         if (!fs.pathExistsSync(configSrc)) {
-          signale.fatal(new Error(`${configSrc} doesn't exist, run mock create first!`));
+          signale.fatal(new Error(`${configSrc} doesn't exist, run 'mock create' first!`));
           process.exit(1);
         }
         const config = requireUncached(configSrc);
 
         const dbSrc = join(folderSrc, config.dbPath || 'db.js');
         if (!fs.pathExistsSync(dbSrc)) {
-          signale.fatal(new Error(`${dbSrc} doesn't exist, run mock create first!`));
+          signale.fatal(new Error(`${dbSrc} doesn't exist, run 'mock create' first!`));
           process.exit(1);
         }
 
@@ -148,7 +148,7 @@ const argv = yargs
         errorOnExist: true,
       });
       signale.success(
-        `Db and config file created in ${moduleName}, use "mock run" to start json-server and try checking http://localhost:{YOUR_PORT}/posts?_limit=10&_page=1`
+        `Db and config file created in ${moduleName}, use 'mock run' to start json-server and try checking http://localhost:{YOUR_PORT}/posts?_limit=10&_page=1`
       );
     }
   )
