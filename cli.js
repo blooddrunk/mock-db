@@ -5,6 +5,7 @@ const { join } = require('path');
 const yargs = require('yargs');
 const fs = require('fs-extra');
 const chalk = require('chalk');
+const signale = require('signale');
 const jsonServer = require('json-server');
 const chokidar = require('chokidar');
 const stoppable = require('stoppable');
@@ -42,20 +43,20 @@ const argv = yargs
 
       const startServer = () => {
         if (!fs.pathExistsSync(folderSrc)) {
-          console.error(`${folderSrc} doesn't exist, run mock create first!`);
+          signale.fatal(new Error(`${folderSrc} doesn't exist, run mock create first!`));
           process.exit(1);
         }
 
         const configSrc = join(folderSrc, 'mock.config.js');
         if (!fs.pathExistsSync(configSrc)) {
-          console.error(`${configSrc} doesn't exist, run mock create first!`);
+          signale.fatal(new Error(`${configSrc} doesn't exist, run mock create first!`));
           process.exit(1);
         }
         const config = requireUncached(configSrc);
 
         const dbSrc = join(folderSrc, config.dbPath || 'db.js');
         if (!fs.pathExistsSync(dbSrc)) {
-          console.error(`${dbSrc} doesn't exist, run mock create first!`);
+          signale.fatal(new Error(`${dbSrc} doesn't exist, run mock create first!`));
           process.exit(1);
         }
 
@@ -82,7 +83,7 @@ const argv = yargs
         app.use(router);
 
         server = app.listen(currentPort, () => {
-          console.log(
+          signale.success(
             `${chalk.green('JSON Server is running at port')} ${chalk.magenta(
               server.address().port
             )}`
@@ -92,7 +93,7 @@ const argv = yargs
 
         server.on('error', e => {
           if (e.code === 'EADDRINUSE') {
-            console.log(
+            signale.warn(
               `${chalk.gray('Port')} ${chalk.yellowBright(currentPort++)} ${chalk.gray(
                 'in use, trying'
               )} ${chalk.yellowBright(currentPort)} ${chalk.gray('instead...')}`
@@ -111,8 +112,8 @@ const argv = yargs
         .on('all', (event, path) => {
           if (server) {
             console.log('');
-            console.log(`${chalk.cyan(event)} ${chalk.grey(path)}`);
-            console.log(chalk.yellow('server reloading...'));
+            signale.info(`${chalk.cyan(event)} ${chalk.grey(path)}`);
+            signale.pending(chalk.yellow('server reloading...'));
             console.log('');
             server.stop(() => {
               startServer();
@@ -146,7 +147,7 @@ const argv = yargs
         overwrite: force,
         errorOnExist: true,
       });
-      console.log(
+      signale.success(
         `Db and config file created in ${moduleName}, use "mock run" to start json-server and try checking http://localhost:{YOUR_PORT}/posts?_limit=10&_page=1`
       );
     }
