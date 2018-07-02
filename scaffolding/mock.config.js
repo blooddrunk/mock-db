@@ -20,16 +20,22 @@ const getPagination = res => {
   };
 };
 
+const wrapResult = result => ({
+  status: 200,
+  errorCode: 0,
+  result,
+});
+
 const render = (req, res) => {
   const requestUrl = url.parse(req.url, true);
 
   let result;
   switch (requestUrl.pathname) {
     case '/posts':
-      result = getPagination(res);
+      result = wrapResult(getPagination(res));
       break;
     default:
-      result = res.locals.data;
+      result = wrapResult(res.locals.data);
   }
   res.jsonp(result);
 };
