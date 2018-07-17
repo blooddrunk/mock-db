@@ -9,6 +9,7 @@ const signale = require('signale');
 const jsonServer = require('json-server');
 const chokidar = require('chokidar');
 const stoppable = require('stoppable');
+const opn = require('opn');
 
 const requireUncached = module => {
   delete require.cache[require.resolve(module)];
@@ -33,9 +34,16 @@ const argv = yargs
           default: 3001,
           describe: 'Specify the port to run json-server on. defaults to 3001',
           type: 'number',
+        })
+        .option('o', {
+          alias: 'open',
+          demandOption: false,
+          describe:
+            'Whether or not open default browser to inspect json-server root. defaults to true',
+          type: 'boolean',
         });
     },
-    ({ port, dir }) => {
+    ({ port, open, dir }) => {
       let app;
       let server;
       let currentPort = port;
@@ -82,12 +90,16 @@ const argv = yargs
         router.render = config.render;
         app.use(router);
 
-        server = app.listen(currentPort, () => {
+        server = app.listen(currentPort, 'localhost', () => {
+          const address = server.address();
+
           signale.success(
-            `${chalk.green('JSON Server is running at port')} ${chalk.magenta(
-              server.address().port
-            )}`
+            `${chalk.green('JSON Server is running at port')} ${chalk.magenta(address.port)}`
           );
+
+          if (open) {
+            opn(`http://${address.address}:${address.port}`);
+          }
         });
         server = stoppable(server);
 
@@ -100,7 +112,7 @@ const argv = yargs
             );
             setTimeout(() => {
               server.close();
-              server.listen(currentPort);
+              server.listen(currentPort, 'localhost');
             }, 1000);
           }
         });
