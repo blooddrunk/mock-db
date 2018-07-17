@@ -39,7 +39,7 @@ const argv = yargs
           alias: 'open',
           demandOption: false,
           describe:
-            'Whether or not open default browser to inspect json-server root. defaults to true',
+            'Whether or not open default browser to inspect json-server root. defaults to false',
           type: 'boolean',
         });
     },
