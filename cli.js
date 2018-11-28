@@ -86,6 +86,13 @@ const argv = yargs
           next();
         });
 
+        const delay = Number.parseInt(config.delay, 10);
+        if (Number.isNaN(delay)) {
+          signale.warn(`expected 'delay' to be a number`);
+        } else {
+          app.use((req, res, next) => setTimeout(next, delay));
+        }
+
         const router = jsonServer.router(db);
         router.render = config.render;
         app.use(router);

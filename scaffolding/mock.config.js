@@ -52,4 +52,5 @@ module.exports = {
     '/api/*': '/$1',
   },
   dbPath: './db.js',
+  delay: 0,
 };
